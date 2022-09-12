@@ -1,0 +1,24 @@
+﻿@model TaskDataTable.Models.StudentDegrees_kw
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+@Html.Partial("CreateAndEdit")
+
+@section scripts{
+    <script>
+        $(function () {
+
+            $('#SearchSchool').chosen();
+            $("#BtnSubmit").click(function () {
+                if ($('#SearchSchool').val() === "") {
+
+                alert("You Must Select school")
+                return;
+                }
+            })
+        });
+    </script>
+}
