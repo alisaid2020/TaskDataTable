@@ -109,18 +109,18 @@ namespace TaskDataTable.Controllers
 
                 //}
 
-                if (!string.IsNullOrEmpty(SearchDate))
-                {
-                    var SrchDate = Convert.ToDateTime(SearchDate);
-                    customerData = customerData.Where(m => DbFunctions.TruncateTime(m.CreatedAt) == SrchDate).OrderBy(m => m.CreatedAt);
+                //if (!string.IsNullOrEmpty(SearchDate))
+                //{
+                //    var SrchDate = Convert.ToDateTime(SearchDate);
+                //    customerData = customerData.Where(m => DbFunctions.TruncateTime(m.CreatedAt) == SrchDate).OrderBy(m => m.CreatedAt);
 
-                }
+                //}
 
 
                 //total number of rows count     
                 recordsTotal = customerData.Count();
                 //Paging     
-                var data = customerData.Skip(skip).Take(pageSize).ToList();
+                    var data = customerData.Skip(skip).Take(pageSize).ToList();
                 //Returning Json Data    
                 return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data });
             }
@@ -180,29 +180,29 @@ namespace TaskDataTable.Controllers
             var customer = Db.StudentDegrees_kw.Find(ID);
 
            
-            using (DbContextTransaction dbtran = Db.Database.BeginTransaction())
-            {
-                try
-                {
+            //using (DbContextTransaction dbtran = Db.Database.BeginTransaction())
+            //{
+            //    try
+            //    {
 
-                    var c1 = Db.StudentDegrees_kw.Where(ww => ww.ID == 20701).FirstOrDefault();
-                    var c2 = Db.StudentDegrees_kw.Where(ww => ww.ID == 20702).FirstOrDefault();
-                    var c = Db.StudentDegrees_kw.Where(ww => ww.ID == 20703).FirstOrDefault();
+            //        var c1 = Db.StudentDegrees_kw.Where(ww => ww.ID == 20701).FirstOrDefault();
+            //        var c2 = Db.StudentDegrees_kw.Where(ww => ww.ID == 20702).FirstOrDefault();
+            //        var c = Db.StudentDegrees_kw.Where(ww => ww.ID == 20703).FirstOrDefault();
 
 
-                    Db.StudentDegrees_kw.Remove(c1);
-                    Db.StudentDegrees_kw.Remove(c2);
-                    Db.StudentDegrees_kw.Remove(c);
-                    Db.SaveChanges();
+            //        Db.StudentDegrees_kw.Remove(c1);
+            //        Db.StudentDegrees_kw.Remove(c2);
+            //        Db.StudentDegrees_kw.Remove(c);
+            //        Db.SaveChanges();
 
-                    dbtran.Commit();
-                }
-                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-                {
-                    dbtran.Rollback();
-                    throw;
-                }
-            }
+            //        dbtran.Commit();
+            //    }
+            //    catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+            //    {
+            //        dbtran.Rollback();
+            //        throw;
+            //    }
+            //}
 
 
             if (ID == null)
