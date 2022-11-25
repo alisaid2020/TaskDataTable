@@ -13,6 +13,7 @@ namespace TaskDataTable.Models
         }
 
         public virtual DbSet<StudentDegrees_kw> StudentDegrees_kw { get; set; }
+        public virtual DbSet<CustomerInfo> CustomerInfo { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

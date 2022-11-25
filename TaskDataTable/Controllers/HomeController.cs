@@ -11,6 +11,10 @@ using Rotativa;
 using Microsoft.Reporting.WebForms;
 using iTextSharp.text.pdf;
 using System.Data.Entity;
+using TaskDataTable.Hubs;
+using System.Data.SqlClient;
+using System.Data;
+using System.Configuration;
 
 namespace TaskDataTable.Controllers
 {
@@ -47,11 +51,11 @@ namespace TaskDataTable.Controllers
             return View();
         }
 
-        public ActionResult LoadData()
+        public ActionResult LoadData(string filter_data,string RecomendStatues)
         {
             try
             {
-
+                
                 var draw = Request.Form.GetValues("draw").FirstOrDefault();
                 var start = Request.Form.GetValues("start").FirstOrDefault();
                 var length = Request.Form.GetValues("length").FirstOrDefault();
@@ -59,7 +63,7 @@ namespace TaskDataTable.Controllers
                 var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
                 var searchValue = Request.Form.GetValues("search[value]").FirstOrDefault();
 
-                string Searchschool = Request.Form.GetValues("columns[0][search][value]")[0];
+                string Searchschool = Request.Form.GetValues("columns[1][search][value]")[0];
 
                 string SearchDate = Request.Form.GetValues("columns[1][search][value]")[0];
 
@@ -104,19 +108,21 @@ namespace TaskDataTable.Controllers
 
                 //if (!string.IsNullOrEmpty(SearchDate))
                 //{
-                //    DateTime SrchDate =Convert.ToDateTime(SearchDate) ;
-                //    customerData = customerData.Where(m => m.CreatedAt<= SrchDate).OrderBy(m =>m.CreatedAt);
+                //    DateTime SrchDate = Convert.ToDateTime(SearchDate);
+                //    customerData = customerData.Where(m => m.CreatedAt <= SrchDate).OrderBy(m => m.CreatedAt);
 
                 //}
 
                 //if (!string.IsNullOrEmpty(SearchDate))
                 //{
                 //    var SrchDate = Convert.ToDateTime(SearchDate);
-                //    customerData = customerData.Where(m => DbFunctions.TruncateTime(m.CreatedAt) == SrchDate).OrderBy(m => m.CreatedAt);
+                //    customerData = customerData.Where(m => DbFunctions.TruncateTime(m.CreatedAt) > SrchDate).OrderBy(m => m.CreatedAt);
 
                 //}
-
-
+                //if (RecomendStatues == "recomendation")
+                //{
+                //    customerData = customerData.Where(a => a.ID ==100);
+                //}
                 //total number of rows count     
                 recordsTotal = customerData.Count();
                 //Paging     
@@ -230,7 +236,8 @@ namespace TaskDataTable.Controllers
 
                 std.SchoolName = school.SchoolName;
                 Db.StudentDegrees_kw.Add(std);
-                Db.SaveChangesAsync();
+                Db.SaveChanges();
+
                 return RedirectToAction("ShowGrid", "Home");
 
             }
@@ -242,6 +249,51 @@ namespace TaskDataTable.Controllers
             }
 
 
+        }
+        [HttpGet]
+        public ActionResult add()
+        {
+            return View();
+        }
+
+        public JsonResult Get()
+        {
+         
+            using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Context"].ConnectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(@"SELECT [Id],[CusId],[CusName]
+                    FROM [dbo].[CustomerInfo] WHERE [Status] <> 0", connection))
+                {
+                    // Make sure the command object does not already have
+                    // a notification object associated with it.
+                    command.Notification = null;
+
+                    SqlDependency dependency = new SqlDependency(command);
+                    dependency.OnChange += new OnChangeEventHandler(dependency_OnChange);
+
+                    if (connection.State == ConnectionState.Closed)
+                        connection.Open();
+
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    var listCus = reader.Cast<IDataRecord>()
+                            .Select(x => new
+                            {
+                                Id = Convert.ToInt32(reader["Id"]),
+                                CusId = reader["CusId"].ToString(),
+                                CusName = reader["CusName"].ToString(),
+                                //notification = reader["notification"].ToString(),
+                            }).ToList();
+
+                    return Json(new { listCus = listCus }, JsonRequestBehavior.AllowGet);
+
+                }
+            }
+        }
+        private void dependency_OnChange(object sender, SqlNotificationEventArgs e)
+        {
+            MyHub.trysignalR();
         }
 
         public ActionResult About()
@@ -270,7 +322,6 @@ namespace TaskDataTable.Controllers
                 return Json(Db.StudentDegrees_kw.Any(s => s.Email.ToLower() == Email.ToLower()), JsonRequestBehavior.AllowGet);
             }
         }
-
 
         public JsonResult IsAlreadyExistEmail(string Email, int? ID)
         {
@@ -302,7 +353,6 @@ namespace TaskDataTable.Controllers
 
             return Json(status, JsonRequestBehavior.AllowGet);
         }
-
 
         public ActionResult pdf(string Reporttype)
         {
@@ -339,8 +389,6 @@ namespace TaskDataTable.Controllers
             return File(renderBytes, mimeType);
             //return View();
         }
-
-
         public ActionResult PrintPdf(string Reporttype)
         {
             LocalReport localReport = new LocalReport();
