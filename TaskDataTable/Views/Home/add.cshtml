@@ -28,7 +28,6 @@
 
             // Proxy created on the fly
             var cus = $.connection.myHub;
-            debugger;
             // Declare a function on the job hub so the server can invoke it
             var clientServerHub = $.connection.incidentServerHub;
             cus.client.getupdated = function () {
@@ -48,7 +47,6 @@
                 datatype: 'json',
                 success: function (data) {
                     $tbl.empty();
-                    //debugger;
                     $.each(data.listCus, function (i, model) {
                         $tbl.append
                             (
@@ -60,11 +58,14 @@
                             );
                     });
                     var notifcount = data.listCus.length;
+                    if (data.listCus.length > 0) {
+                    $('#notif').css("background-color", "red");
+
+                    } else
+                        $('#notif').css("background-color", "Black");
+
                     $('#notif').text(notifcount);
-                    //$("#notif").text = notifcount;
-                    //var aaa = $("#notif").attr('title');
-                    //alert(aaa);
-                    //alert(notifcount);
+
                 }
             });
         }

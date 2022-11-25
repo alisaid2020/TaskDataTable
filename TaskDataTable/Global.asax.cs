@@ -23,7 +23,7 @@ namespace TaskDataTable
         }
         protected void Application_End()
         {
-            SqlDependency.Stop(ConfigurationManager.ConnectionStrings["CustomerConnection"].ConnectionString);
+            SqlDependency.Stop(ConfigurationManager.ConnectionStrings["Context"].ConnectionString);
         }
     }
 }
