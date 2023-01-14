@@ -104,7 +104,10 @@ namespace TaskDataTable.Controllers
                     //customerData = customerData.Where(m => m.SchoolName.StartsWith(empName));
                 }
 
-
+                //if (filter_data != "" )
+                //{
+                //    customerData= customerData.Where(m =>  DbFunctions.TruncateTime(m.CreatedAt) > DateTimeOffset.Parse(filter_data));
+                //}
 
                 //if (!string.IsNullOrEmpty(SearchDate))
                 //{
